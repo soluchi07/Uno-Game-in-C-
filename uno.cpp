@@ -8,6 +8,9 @@ using namespace std;
 #include <cstdlib>
 // look up <ctime> for random seed
 
+// ------------------- GAMESTATE CONSTRUCTOR -------------------
+// Initializes the deck, sets direction, player count, and other game state variables.
+// Randomly selects a starting card and creates player objects.
 GameState::GameState()
 {
     deck = new Deck();
@@ -27,9 +30,13 @@ GameState::GameState()
     }
 }
 
+// ------------------- CARD CLASS -------------------
+// Default and parameterized constructors for Card objects.
 Card::Card() : value(""), colour("") {}
 Card::Card(string v, string c) : value(v), colour(c) {}
 
+// ------------------- DECK CLASS -------------------
+// Default constructor creates all UNO cards and adds them to the deck.
 Deck::Deck()
 {
     cards = {};
@@ -46,6 +53,7 @@ Deck::Deck()
         cards.push_back(Card(to_string(i + 1), "yellow"));
         i++;
     }
+    // Add special cards: skip, reverse, +2, wild, wild +4, and 0s
     cards.push_back(Card("skip", "red"));
     cards.push_back(Card("skip", "blue"));
     cards.push_back(Card("skip", "green"));
@@ -83,13 +91,16 @@ Deck::Deck()
     }
 }
 
+// Alternate constructor for Deck that takes a vector of cards.
 Deck::Deck(vector<Card> c) : cards(c) {}
 
-vector<Card>& Deck::getCards()
+// Returns a reference to the deck's card vector.
+vector<Card> &Deck::getCards()
 {
     return cards;
 }
 
+// Shuffles the deck using a random number generator.
 void Deck::shuffleDeck()
 {
     random_device rd;
@@ -97,11 +108,14 @@ void Deck::shuffleDeck()
     shuffle(cards.begin(), cards.end(), gen);
 }
 
+// ------------------- PLAYER CLASS -------------------
+// Default constructor initializes an empty hand.
 Player::Player()
 {
     hand = {};
 }
 
+// Removes and returns the card at the given index from the player's hand.
 Card Player::playCard(int index)
 {
     Card played = hand[index];
@@ -109,6 +123,7 @@ Card Player::playCard(int index)
     return played;
 }
 
+// Prints the player's hand to the console.
 void Player::seeHand()
 {
     cout << "Here's your hand:" << endl;
@@ -118,41 +133,44 @@ void Player::seeHand()
     }
 }
 
+// Adds a card to the player's hand and prints a message.
 void Player::pickCard(Card c)
 {
     hand.push_back(c);
     cout << "You have picked up " << c.colour << " " << c.value << endl;
 }
 
+// ------------------- GAMESTATE SPECIAL CARD HANDLING -------------------
+
+// Handles the effect of a wild +4 card, including stacking and counters.
 void GameState::pick4()
 {
-    //allow for it to work fowards and backwards. check the indec for out of bound error with multiple stacks
+    // Increment the +4 stack and determine the next player.
     fourStack++;
     char choice;
     int nextIndex = (currentPlayerIndex + fourStack + direction) % no_of_players;
 
-    //edit (currentPlayerIndex + fourStack + 1) % no_of_players to move backwards too
-
+    // Ask if the next player has a counter.
     cout << "Player " << (currentPlayerIndex + fourStack) % no_of_players << " plays a wild +4 card." << endl;
-    
     cout << "Does Player " << nextIndex << " have a counter? (y/n)" << endl;
     cin >> choice;
     if (choice == 'y')
     {
+        // If countered, recursively call pick4 for stacking.
         cout << "Player " << nextIndex << " has a counter" << endl;
         cout << "Player " << nextIndex << " plays the counter" << endl;
         pick4();
-        //for now the only counter is another +2 for simplicity
-        // add functionality for +4 counter
+        // For now, only another +4 is a valid counter.
     }
     else
     {
+        // If not countered, next player picks up the stacked cards.
         cout << "Player " << nextIndex << " does not have a counter" << endl;
         cout << "Player " << nextIndex << " picks up the cards" << endl;
-        for (int i = 0; i < 4*fourStack; i++)
-        // use i < (2*twoStack) + (4*fourStack) for functionality that allows for +2s to be countered by +4s
+        for (int i = 0; i < 4 * fourStack; i++)
         {
-            if (deck->getCards().empty()) {
+            if (deck->getCards().empty())
+            {
                 cout << "Deck is empty! Cannot pick more cards." << endl;
                 break;
             }
@@ -160,39 +178,38 @@ void GameState::pick4()
             players[nextIndex - 1].pickCard(c);
             deck->getCards().erase(deck->getCards().begin());
         }
-        
     }
     fourStack = 0;
     currentPlayerIndex = currentPlayerIndex + direction;
 }
 
+// Handles the effect of a +2 card, including stacking and counters.
 void GameState::pick2()
 {
-    //allow for it to work fowards and backwards. check the indec for out of bound error with multiple stacks
+    // Increment the +2 stack and determine the next player.
     twoStack++;
     char choice;
     int nextIndex = (currentPlayerIndex + twoStack + direction) % no_of_players;
     cout << "Player " << (currentPlayerIndex + twoStack) % no_of_players << " plays a +2 card." << endl;
-    
     cout << "Does Player " << nextIndex << " have a counter? (y/n)" << endl;
     cin >> choice;
     if (choice == 'y')
     {
-        // add function like isValidCard to check if the counter is valid
+        // If countered, recursively call pick2 for stacking.
         cout << "Player " << nextIndex << " has a counter" << endl;
         cout << "Player " << nextIndex << " plays the counter" << endl;
         pick2();
-        //for now the only counter is another +2 for simplicity
-        // add functionality for +4 counter
+        // For now, only another +2 is a valid counter.
     }
     else
     {
+        // If not countered, next player picks up the stacked cards.
         cout << "Player " << nextIndex << " does not have a counter" << endl;
         cout << "Player " << nextIndex << " picks up the cards" << endl;
-        for (int i = 0; i < 2*twoStack; i++)
-        // use i < (2*twoStack) + (4*fourStack) for functionality that allows for +2s to be countered by +4s
+        for (int i = 0; i < 2 * twoStack; i++)
         {
-            if (deck->getCards().empty()) {
+            if (deck->getCards().empty())
+            {
                 cout << "Deck is empty! Cannot pick more cards." << endl;
                 break;
             }
@@ -200,38 +217,42 @@ void GameState::pick2()
             players[nextIndex - 1].pickCard(c);
             deck->getCards().erase(deck->getCards().begin());
         }
-        
     }
     twoStack = 0;
     currentPlayerIndex = currentPlayerIndex + direction;
-    
 }
 
+// ------------------- CARD VALIDATION -------------------
+// Checks if a card can be played on top of the current card.
 bool isValidCard(Card c, Card current)
 {
-    // c is Player.hand[index]
-    if (c.value == current.value || c.colour == current.colour || c.colour == "all") //|| current.colour == "all")
+    // Card is valid if it matches value, colour, or is a wild card.
+    if (c.value == current.value || c.colour == current.colour || c.colour == "all")
     {
         return true;
     }
     else
     {
         return false;
-    }//add conditions for wild cards
+    }
+    // Additional conditions for wild cards can be added here.
 }
 
-// Add any additional functions or classes as needed
+// ------------------- CARD OUTCOME HANDLER -------------------
+// Handles the effects of special cards after they are played.
 void GameState::cardOutcome(Card c)
 {
-    
+    // If skip is played, advance to the next player.
     if (currentCard.value == "skip")
     {
         currentPlayerIndex = currentPlayerIndex + direction;
     }
+    // If reverse is played, change the direction of play.
     else if (currentCard.value == "reverse")
     {
         direction *= -1;
     }
+    // If wild is played, prompt the player to choose a colour.
     else if (currentCard.value == "wild")
     {
         cout << "Player " << currentPlayerIndex + 1 << " plays a wild card. What colour do you want to play? (use lowercase)" << endl;
@@ -244,6 +265,7 @@ void GameState::cardOutcome(Card c)
         }
         currentCard.colour = colour;
     }
+    // If wild +4 is played, prompt for colour and handle penalty.
     else if (currentCard.value == "wild +4")
     {
         cout << "Player " << currentPlayerIndex + 1 << " plays a wild +4 card. What colour do you want to play? (use lowercase)" << endl;
@@ -257,6 +279,7 @@ void GameState::cardOutcome(Card c)
         currentCard.colour = colour;
         pick4();
     }
+    // If +2 is played, handle penalty.
     else if (currentCard.value == "+2")
     {
         pick2();
