@@ -82,7 +82,15 @@ int main()
         }
         // add way to say uno lest you get a penalty
 
-        gameState.currentPlayerIndex = (gameState.currentPlayerIndex + gameState.direction) % gameState.players.size();
+        if (gameState.direction == -1 && gameState.currentPlayerIndex == 0)
+        {
+            gameState.currentPlayerIndex = gameState.no_of_players - 1;
+        }
+        else
+        {
+            gameState.currentPlayerIndex = (gameState.currentPlayerIndex + gameState.direction) % gameState.players.size();
+        }
+        
 
         cout << "Current card: " << gameState.currentCard.colour << " " << gameState.currentCard.value << endl;
     }

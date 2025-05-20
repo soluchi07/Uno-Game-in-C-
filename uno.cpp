@@ -19,13 +19,11 @@ GameState::GameState()
     fourStack = 0;
     vector<Player> players = {};
     int starter = rand() % deck->getCards().size();
-    // should cards be the pointer instead of the object?
 
     currentCard = deck->getCards()[starter];
     for (int i = 0; i < no_of_players; i++)
     {
         players.push_back(Player());
-        // players[i].hand = {};
     }
 }
 
@@ -126,10 +124,32 @@ void Player::pickCard(Card c)
     cout << "You have picked up" << c.colour << " " << c.value << endl;
 }
 
-void Player::pick4(Card c)
+void GameState::pick4()
 {
-    hand.push_back(c);
-    cout << "You have picked up" << c.colour << " " << c.value << endl;
+    fourStack++;
+    char choice;
+    cout << "Player " << currentPlayerIndex + 1 << " wants player " << currentPlayerIndex + 2 << " to pick four cards" << endl;
+    cout << "Dpes Player " << currentPlayerIndex + 2 << " have a counter>?" << endl;
+    cin >> choice;
+    if (choice == 'y')
+    {
+        cout << "Player " << currentPlayerIndex + 2 << " has a counter" << endl;
+        cout << "Player " << currentPlayerIndex + 2 << " plays the counter" << endl;
+        fourStack = 0;
+    }
+    else
+    {
+        cout << "Player " << currentPlayerIndex + 2 << " does not have a counter" << endl;
+        cout << "Player " << currentPlayerIndex + 2 << " picks up the cards" << endl;
+        for (int i = 0; i < 4*fourStack; i++)
+        // use i < (2*twoStack) + (4*fourStack) for functionality that allows for +2s to be countered by +4s
+        {
+            Card c = deck->getCards()[0];
+            players[currentPlayerIndex + 2].pickCard(c);
+            deck->getCards().erase(deck->getCards().begin());
+        }
+        
+    }
 }
 
 void GameState::pick2()
@@ -164,7 +184,7 @@ void GameState::pick2()
 bool isValidCard(Card c, Card current)
 {
     // c is Player.hand[index]
-    if (c.value == current.value || c.colour == current.colour || c.colour == "all")
+    if (c.value == current.value || c.colour == current.colour || c.colour == "all" || current.colour == "all")
     {
         return true;
     }
@@ -180,7 +200,7 @@ void GameState::cardOutcome(Card c)
     
     if (currentCard.value == "skip")
     {
-        currentPlayerIndex++;
+        currentPlayerIndex = currentPlayerIndex + direction;
     }
     else if (currentCard.value == "reverse")
     {
@@ -188,25 +208,32 @@ void GameState::cardOutcome(Card c)
     }
     else if (currentCard.value == "wild")
     {
-        cout << "Player " << currentPlayerIndex + 1 << " plays a wild card. What colour do you want to play?" << endl;
+        cout << "Player " << currentPlayerIndex + 1 << " plays a wild card. What colour do you want to play? (use lowercase)" << endl;
         string colour;
         cin >> colour;
+        while (colour != "red" && colour != "blue" && colour != "green" && colour != "yellow")
+        {
+            cout << "Invalid colour. Please choose red, blue, green, or yellow." << endl;
+            cin >> colour;
+        }
         currentCard.colour = colour;
     }
     else if (currentCard.value == "wild +4")
     {
-        cout << "Player " << currentPlayerIndex + 1 << " plays a wild +4 card. What colour do you want to play?" << endl;
+        cout << "Player " << currentPlayerIndex + 1 << " plays a wild +4 card. What colour do you want to play? (use lowercase)" << endl;
         string colour;
         cin >> colour;
+        while (colour != "red" && colour != "blue" && colour != "green" && colour != "yellow")
+        {
+            cout << "Invalid colour. Please choose red, blue, green, or yellow." << endl;
+            cin >> colour;
+        }
         currentCard.colour = colour;
-        fourStack++;
+        pick4();
     }
     else if (currentCard.value == "+2")
     {
-        for (int i = 0; i < 2; i++)
-        {
-            players[currentPlayerIndex].pickCard(deck->getCards()[0]);
-            deck->getCards().erase(deck->getCards().begin());
-        }
+        cout << "Player " << currentPlayerIndex + 1 << " plays a +2 card." << endl;
+        pick2();
     }
 }
