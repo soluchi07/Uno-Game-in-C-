@@ -129,7 +129,7 @@ void GameState::pick4()
     //allow for it to work fowards and backwards. check the indec for out of bound error with multiple stacks
     fourStack++;
     char choice;
-    int nextIndex = (currentPlayerIndex + fourStack + 1) % no_of_players;
+    int nextIndex = (currentPlayerIndex + fourStack + direction) % no_of_players;
 
     //edit (currentPlayerIndex + fourStack + 1) % no_of_players to move backwards too
 
@@ -152,13 +152,18 @@ void GameState::pick4()
         for (int i = 0; i < 4*fourStack; i++)
         // use i < (2*twoStack) + (4*fourStack) for functionality that allows for +2s to be countered by +4s
         {
+            if (deck->getCards().empty()) {
+                cout << "Deck is empty! Cannot pick more cards." << endl;
+                break;
+            }
             Card c = deck->getCards()[0];
-            players[nextIndex].pickCard(c);
+            players[nextIndex - 1].pickCard(c);
             deck->getCards().erase(deck->getCards().begin());
         }
         
     }
     fourStack = 0;
+    currentPlayerIndex = currentPlayerIndex + direction;
 }
 
 void GameState::pick2()
@@ -166,7 +171,7 @@ void GameState::pick2()
     //allow for it to work fowards and backwards. check the indec for out of bound error with multiple stacks
     twoStack++;
     char choice;
-    int nextIndex = (currentPlayerIndex + twoStack + 1) % no_of_players;
+    int nextIndex = (currentPlayerIndex + twoStack + direction) % no_of_players;
     cout << "Player " << (currentPlayerIndex + twoStack) % no_of_players << " plays a +2 card." << endl;
     
     cout << "Does Player " << nextIndex << " have a counter? (y/n)" << endl;
@@ -187,13 +192,18 @@ void GameState::pick2()
         for (int i = 0; i < 2*twoStack; i++)
         // use i < (2*twoStack) + (4*fourStack) for functionality that allows for +2s to be countered by +4s
         {
+            if (deck->getCards().empty()) {
+                cout << "Deck is empty! Cannot pick more cards." << endl;
+                break;
+            }
             Card c = deck->getCards()[0];
-            players[nextIndex].pickCard(c);
+            players[nextIndex - 1].pickCard(c);
             deck->getCards().erase(deck->getCards().begin());
         }
         
     }
     twoStack = 0;
+    currentPlayerIndex = currentPlayerIndex + direction;
     
 }
 

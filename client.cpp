@@ -24,7 +24,7 @@ int main()
     {
         cout << "Player " << i + 1 << " picks a card from the deck." << endl << endl;
         // Pick 7 cards from the deck
-        for (int j = 0; j < 7; j++)
+        for (int j = 0; j < 5; j++)
         {
             
             gameState.players[i].pickCard(gameState.deck->getCards()[0]);
@@ -68,6 +68,11 @@ int main()
         else
         {
             cout << "You don't want to play this round, so pick a card from the deck." << endl;
+            // if (gameState.deck->getCards().empty()) {
+            //     cout << "Deck is empty! Cannot pick more cards." << endl;
+            //     break;
+            // }
+            // Card c = deck->getCards()[0];
             currentPlayer.pickCard(gameState.deck->getCards()[0]);
             gameState.deck->getCards().erase(gameState.deck->getCards().begin());
         }
