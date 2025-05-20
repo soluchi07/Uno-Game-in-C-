@@ -16,29 +16,31 @@ int main()
     //create players that use diff strategies with dumb and smarter ones
     //add a way to say uno and get a penalty if you don't
     //add a way to customize the user's name
+    //write a function that allows for the player to pick a card from their hand for added functionality
     
-    Deck *main;
     GameState gameState;
-    gameState.deck = main;
     gameState.deck->shuffleDeck();
     for (int i = 0; i < gameState.no_of_players; i++)
     {
+        cout << "Player " << i + 1 << " picks a card from the deck." << endl << endl;
         // Pick 7 cards from the deck
         for (int j = 0; j < 7; j++)
         {
+            
             gameState.players[i].pickCard(gameState.deck->getCards()[0]);
             gameState.deck->getCards().erase(gameState.deck->getCards().begin());
         }
+        cout << endl;
     }
 
     cout << "The first card is " << gameState.currentCard.colour << " " << gameState.currentCard.value << endl;
-
+    //add way of ensuring the first card is not a wild card or action card
     // Main game loop
     while (!gameState.gameOver)
     {
         //find a way to shuffle the deck every couple of rounds
         Player &currentPlayer = gameState.players[gameState.currentPlayerIndex];
-        cout << "Player " << gameState.currentPlayerIndex + gameState.direction << "'s turn." << endl;
+        cout << "Player " << gameState.currentPlayerIndex + 1 << "'s turn." << endl;
         cout << "Do you want to play this round? (y/n)" << endl;
         char choice;
         cin >> choice;
@@ -92,7 +94,7 @@ int main()
         }
         
 
-        cout << "Current card: " << gameState.currentCard.colour << " " << gameState.currentCard.value << endl;
+        cout << "Current card: " << gameState.currentCard.colour << " " << gameState.currentCard.value << endl << endl;
     }
 
     cout << "Game over!" << endl;

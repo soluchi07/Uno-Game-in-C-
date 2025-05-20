@@ -17,7 +17,7 @@ GameState::GameState()
     gameOver = false;
     twoStack = 0;
     fourStack = 0;
-    vector<Player> players = {};
+    players = {};
     int starter = rand() % deck->getCards().size();
 
     currentCard = deck->getCards()[starter];
@@ -121,7 +121,7 @@ void Player::seeHand()
 void Player::pickCard(Card c)
 {
     hand.push_back(c);
-    cout << "You have picked up" << c.colour << " " << c.value << endl;
+    cout << "You have picked up " << c.colour << " " << c.value << endl;
 }
 
 void GameState::pick4()
@@ -129,27 +129,31 @@ void GameState::pick4()
     //allow for it to work fowards and backwards. check the indec for out of bound error with multiple stacks
     fourStack++;
     char choice;
-    cout << "Player " << currentPlayerIndex + fourStack << " plays a wild +4 card." << endl;
+    int nextIndex = (currentPlayerIndex + fourStack + 1) % no_of_players;
+
+    //edit (currentPlayerIndex + fourStack + 1) % no_of_players to move backwards too
+
+    cout << "Player " << (currentPlayerIndex + fourStack) % no_of_players << " plays a wild +4 card." << endl;
     
-    cout << "Does Player " << currentPlayerIndex + fourStack + 1 << " have a counter? (y/n)" << endl;
+    cout << "Does Player " << nextIndex << " have a counter? (y/n)" << endl;
     cin >> choice;
     if (choice == 'y')
     {
-        cout << "Player " << currentPlayerIndex + fourStack + 1 << " has a counter" << endl;
-        cout << "Player " << currentPlayerIndex + fourStack + 1 << " plays the counter" << endl;
+        cout << "Player " << nextIndex << " has a counter" << endl;
+        cout << "Player " << nextIndex << " plays the counter" << endl;
         pick4();
         //for now the only counter is another +2 for simplicity
         // add functionality for +4 counter
     }
     else
     {
-        cout << "Player " << currentPlayerIndex + fourStack + 1 << " does not have a counter" << endl;
-        cout << "Player " << currentPlayerIndex + fourStack + 1 << " picks up the cards" << endl;
+        cout << "Player " << nextIndex << " does not have a counter" << endl;
+        cout << "Player " << nextIndex << " picks up the cards" << endl;
         for (int i = 0; i < 4*fourStack; i++)
         // use i < (2*twoStack) + (4*fourStack) for functionality that allows for +2s to be countered by +4s
         {
             Card c = deck->getCards()[0];
-            players[currentPlayerIndex + 2].pickCard(c);
+            players[nextIndex].pickCard(c);
             deck->getCards().erase(deck->getCards().begin());
         }
         
@@ -162,27 +166,29 @@ void GameState::pick2()
     //allow for it to work fowards and backwards. check the indec for out of bound error with multiple stacks
     twoStack++;
     char choice;
-    cout << "Player " << currentPlayerIndex + twoStack << " plays a +2 card." << endl;
+    int nextIndex = (currentPlayerIndex + twoStack + 1) % no_of_players;
+    cout << "Player " << (currentPlayerIndex + twoStack) % no_of_players << " plays a +2 card." << endl;
     
-    cout << "Does Player " << currentPlayerIndex + twoStack + 1 << " have a counter? (y/n)" << endl;
+    cout << "Does Player " << nextIndex << " have a counter? (y/n)" << endl;
     cin >> choice;
     if (choice == 'y')
     {
-        cout << "Player " << currentPlayerIndex + twoStack + 1 << " has a counter" << endl;
-        cout << "Player " << currentPlayerIndex + twoStack + 1 << " plays the counter" << endl;
+        // add function like isValidCard to check if the counter is valid
+        cout << "Player " << nextIndex << " has a counter" << endl;
+        cout << "Player " << nextIndex << " plays the counter" << endl;
         pick2();
         //for now the only counter is another +2 for simplicity
         // add functionality for +4 counter
     }
     else
     {
-        cout << "Player " << currentPlayerIndex + twoStack + 1 << " does not have a counter" << endl;
-        cout << "Player " << currentPlayerIndex + twoStack + 1 << " picks up the cards" << endl;
+        cout << "Player " << nextIndex << " does not have a counter" << endl;
+        cout << "Player " << nextIndex << " picks up the cards" << endl;
         for (int i = 0; i < 2*twoStack; i++)
         // use i < (2*twoStack) + (4*fourStack) for functionality that allows for +2s to be countered by +4s
         {
             Card c = deck->getCards()[0];
-            players[currentPlayerIndex + 2].pickCard(c);
+            players[nextIndex].pickCard(c);
             deck->getCards().erase(deck->getCards().begin());
         }
         
@@ -194,7 +200,7 @@ void GameState::pick2()
 bool isValidCard(Card c, Card current)
 {
     // c is Player.hand[index]
-    if (c.value == current.value || c.colour == current.colour || c.colour == "all" || current.colour == "all")
+    if (c.value == current.value || c.colour == current.colour || c.colour == "all") //|| current.colour == "all")
     {
         return true;
     }
