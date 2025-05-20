@@ -9,14 +9,14 @@ using namespace std;
 
 int main()
 {
-    //add conditions for wild cards
+    
     //fix bugs with the direction variable
-    //add conditions for stacking or double decking
+    //add conditions for double decking
     //automate players if this passes tests
+    //add option for pvp or pve so you can play with friends (no_of_players = 2) or against the computer
     //create players that use diff strategies with dumb and smarter ones
     //add a way to say uno and get a penalty if you don't
     //add a way to customize the user's name
-    //write a function that allows for the player to pick a card from their hand for added functionality
     
     GameState gameState;
     gameState.deck->shuffleDeck();
