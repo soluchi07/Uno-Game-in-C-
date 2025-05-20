@@ -13,7 +13,7 @@ This project is a simple console-based implementation of the classic card game U
 
 - `uno.cpp`: Main implementation of the game logic, including classes for `Card`, `Deck`, `Player`, and `GameState`.
 - `uno.h`: Header file with class declarations.
-- `client.cpp`: (Optional) Entry point or additional client code for running the game.
+- `client.cpp`: Entry point or additional client code for running the game.
 
 ## How to Build and Run
 
