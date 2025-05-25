@@ -21,7 +21,7 @@ This project is a simple console-based implementation of the classic card game U
 2. **Open a terminal in the project directory.**
 3. **Compile the code:**
    ```sh
-   g++ -std=c++11 uno.cpp client.cpp -o uno
+   g++ uno.cpp client.cpp -o uno
    ```
    (You may need to adjust the command if you use a different compiler or file structure.)
 4. **Run the game:**
